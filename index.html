@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麗澤マッピング</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header" aria-label="アプリ情報">
+    <div>
+      <h1>麗澤マッピング</h1>
+      <p>地図をクリックして、その場所に付箋メモを貼れます。</p>
+    </div>
+    <div class="note-count" aria-live="polite">
+      <span id="noteCount">0</span>
+      <span>枚</span>
+    </div>
+  </header>
+
+  <main class="map-shell">
+    <div id="map" aria-label="麗澤大学周辺の付箋マップ"></div>
+  </main>
+
+  <template id="noteFormTemplate">
+    <form class="sticky-form">
+      <label for="noteText">この場所のメモ</label>
+      <textarea id="noteText" name="noteText" maxlength="80" rows="4" placeholder="例: 静かに話せる場所"></textarea>
+      <div class="form-actions">
+        <button type="button" class="ghost-button" data-action="cancel">閉じる</button>
+        <button type="submit" class="primary-button">貼る</button>
+      </div>
+    </form>
+  </template>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js" charset="UTF-8"></script>
+</body>
+</html>
