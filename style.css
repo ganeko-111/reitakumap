@@ -26,8 +26,14 @@ body {
 }
 
 button,
-textarea {
+textarea,
+input,
+select {
   font: inherit;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 .app-header {
@@ -36,10 +42,11 @@ textarea {
   left: 18px;
   z-index: 1000;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 18px;
   max-width: min(520px, calc(100vw - 36px));
-  padding: 14px 16px;
+  padding: 14px 62px 14px 16px;
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 8px;
@@ -47,11 +54,62 @@ textarea {
   backdrop-filter: blur(10px);
 }
 
+.panel-hide-button,
+.panel-show-button {
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(22, 27, 31, 0.18);
+}
+
+.panel-hide-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-height: 32px;
+  padding: 0 10px;
+  color: #3d4a51;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(93, 103, 112, 0.22);
+  border-radius: 5px;
+}
+
+.panel-show-button {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #4f3c00;
+  background: var(--paper);
+  border: 1px solid var(--paper-edge);
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.panel-hide-button:hover,
+.panel-show-button:hover {
+  background: #fff;
+}
+
+.header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .app-header h1 {
   margin: 0;
   font-size: clamp(1.35rem, 2.6vw, 2rem);
   line-height: 1.1;
   letter-spacing: 0;
+}
+
+.app-header > div:first-of-type {
+  min-width: 0;
 }
 
 .app-header p {
@@ -87,6 +145,22 @@ textarea {
   font-size: 0.75rem;
 }
 
+.reset-button {
+  min-height: 38px;
+  padding: 0 12px;
+  color: #3d4a51;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(93, 103, 112, 0.28);
+  border-radius: 5px;
+  box-shadow: 0 5px 14px rgba(22, 27, 31, 0.12);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.reset-button:hover {
+  background: #fff;
+}
+
 .map-shell,
 #map {
   width: 100vw;
@@ -97,6 +171,10 @@ textarea {
   top: 118px;
 }
 
+.panel-collapsed .leaflet-control-container .leaflet-top.leaflet-left {
+  top: 70px;
+}
+
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background: transparent;
@@ -104,7 +182,7 @@ textarea {
 }
 
 .leaflet-popup-content {
-  width: 230px !important;
+  width: 270px !important;
   margin: 0;
 }
 
@@ -114,16 +192,24 @@ textarea {
 
 .sticky-note-marker {
   position: relative;
+  --note-paper: var(--paper);
+  --note-edge: var(--paper-edge);
+  --note-ink: #4f3c00;
+  --note-fold: rgba(183, 151, 24, 0.3);
+  --note-line: rgba(79, 60, 0, 0.45);
+  --note-dot: #f2c94c;
+  --note-dot-edge: #7a6517;
   width: 94px;
   min-height: 70px;
   padding: 10px 9px;
-  color: #4f3c00;
-  background: var(--paper);
-  border: 1px solid var(--paper-edge);
+  color: var(--note-ink);
+  background: var(--note-paper);
+  border: 1px solid var(--note-edge);
   border-radius: 4px;
   box-shadow: 0 10px 18px rgba(50, 42, 4, 0.22);
   font-size: 0.76rem;
   line-height: 1.35;
+  pointer-events: auto;
   word-break: break-word;
   transform: rotate(-2deg);
   cursor: grab;
@@ -142,17 +228,116 @@ textarea {
   bottom: -7px;
   width: 26px;
   height: 16px;
-  background: linear-gradient(135deg, rgba(183, 151, 24, 0.3), rgba(255, 247, 184, 0));
+  background: linear-gradient(135deg, var(--note-fold), rgba(255, 247, 184, 0));
   transform: skewY(-18deg);
+}
+
+.sticky-note-marker--type-discovery {
+  --note-paper: #fff7b8;
+  --note-edge: #dfc64c;
+  --note-ink: #4f3c00;
+  --note-fold: rgba(183, 151, 24, 0.3);
+  --note-line: rgba(79, 60, 0, 0.45);
+  --note-dot: #f2c94c;
+  --note-dot-edge: #7a6517;
+}
+
+.sticky-note-marker--type-recommendation {
+  --note-paper: #d9ecff;
+  --note-edge: #75aee8;
+  --note-ink: #143c61;
+  --note-fold: rgba(60, 119, 178, 0.28);
+  --note-line: rgba(20, 60, 97, 0.42);
+  --note-dot: #63a7ee;
+  --note-dot-edge: #1f5f99;
+}
+
+.sticky-note-marker--type-warning {
+  --note-paper: #ffd8d2;
+  --note-edge: #df7568;
+  --note-ink: #68231c;
+  --note-fold: rgba(174, 63, 49, 0.25);
+  --note-line: rgba(104, 35, 28, 0.42);
+  --note-dot: #ef7568;
+  --note-dot-edge: #9e3328;
+}
+
+.sticky-note-marker--type-rest {
+  --note-paper: #dff4cf;
+  --note-edge: #84bb68;
+  --note-ink: #284f22;
+  --note-fold: rgba(87, 136, 56, 0.25);
+  --note-line: rgba(40, 79, 34, 0.42);
+  --note-dot: #8bcf63;
+  --note-dot-edge: #437a2c;
+}
+
+.sticky-note-marker--compact {
+  width: 40px;
+  height: 34px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 3px;
+  transform: rotate(-5deg);
+}
+
+.sticky-note-marker--compact::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  width: 20px;
+  height: 2px;
+  background: var(--note-line);
+  box-shadow: 0 6px 0 rgba(79, 60, 0, 0.22);
+}
+
+.sticky-note-marker--compact::after {
+  right: 4px;
+  bottom: -4px;
+  width: 12px;
+  height: 8px;
+}
+
+.sticky-note-marker--dot {
+  width: 22px;
+  height: 22px;
+  min-height: 0;
+  padding: 0;
+  background: var(--note-dot);
+  border: 2px solid var(--note-dot-edge);
+  border-radius: 999px;
+  box-shadow: 0 6px 14px rgba(50, 42, 4, 0.24);
+  transform: none;
+}
+
+.sticky-note-marker--dot::after {
+  display: none;
 }
 
 .sticky-popup-card,
 .sticky-form {
-  color: #4f3c00;
-  background: var(--paper);
-  border: 1px solid var(--paper-edge);
+  --note-paper: var(--paper);
+  --note-edge: var(--paper-edge);
+  --note-ink: #4f3c00;
+  color: var(--note-ink);
+  background: var(--note-paper);
+  border: 1px solid var(--note-edge);
   border-radius: 5px;
   box-shadow: 0 16px 36px rgba(55, 46, 6, 0.24);
+}
+
+.note-type-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin-bottom: 10px;
+  padding: 0 8px;
+  background: rgba(255, 255, 255, 0.44);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
 }
 
 .sticky-popup-card {
@@ -160,10 +345,21 @@ textarea {
 }
 
 .sticky-popup-card p {
-  margin: 0 0 14px;
+  margin: 0 0 12px;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.55;
+}
+
+.note-photo {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  margin: 0 0 14px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 5px;
 }
 
 .sticky-form {
@@ -174,6 +370,64 @@ textarea {
   display: block;
   margin-bottom: 8px;
   font-weight: 700;
+}
+
+.type-field {
+  margin-top: 10px;
+}
+
+.image-field {
+  margin-top: 12px;
+}
+
+.image-field input[type="file"] {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  color: #352900;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px dashed rgba(184, 154, 31, 0.55);
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.image-preview {
+  margin-top: 10px;
+}
+
+.image-preview[hidden],
+.image-remove-button[hidden] {
+  display: none;
+}
+
+.image-preview img {
+  display: block;
+  width: 100%;
+  max-height: 150px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 5px;
+}
+
+.image-remove-button {
+  margin-top: 8px;
+}
+
+.type-field select {
+  display: block;
+  width: 100%;
+  min-height: 38px;
+  color: #352900;
+  background: rgba(255, 255, 255, 0.44);
+  border: 1px solid rgba(184, 154, 31, 0.45);
+  border-radius: 4px;
+  padding: 0 10px;
+  outline: none;
+}
+
+.type-field select:focus {
+  border-color: var(--note-edge);
+  box-shadow: 0 0 0 3px rgba(184, 154, 31, 0.18);
 }
 
 .sticky-form textarea {
@@ -267,8 +521,27 @@ textarea {
     top: 10px;
     left: 10px;
     max-width: calc(100vw - 20px);
-    padding: 12px;
+    padding: 42px 12px 12px;
     gap: 12px;
+  }
+
+  .panel-hide-button {
+    top: 8px;
+    right: 8px;
+    min-height: 28px;
+    padding: 0 9px;
+    font-size: 0.82rem;
+  }
+
+  .panel-show-button {
+    top: 10px;
+    left: 10px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .header-actions {
+    gap: 8px;
   }
 
   .app-header p {
@@ -284,7 +557,11 @@ textarea {
     top: 104px;
   }
 
+  .panel-collapsed .leaflet-control-container .leaflet-top.leaflet-left {
+    top: 58px;
+  }
+
   .leaflet-popup-content {
-    width: min(230px, calc(100vw - 42px)) !important;
+    width: min(270px, calc(100vw - 42px)) !important;
   }
 }
