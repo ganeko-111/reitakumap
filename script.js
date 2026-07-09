@@ -459,7 +459,7 @@ function createStickyForm({ text, type, image, submitLabel }) {
   const form = noteFormTemplate.content.firstElementChild.cloneNode(true);
   const textarea = form.querySelector("textarea");
   const typeSelect = form.querySelector("select");
-  const imageInput = form.querySelector('input[type="file"]');
+  const imageInputs = form.querySelectorAll("[data-image-input]");
   const imagePreview = form.querySelector("[data-image-preview]");
   const imagePreviewImg = imagePreview.querySelector("img");
   const removeImageButton = form.querySelector('[data-action="remove-image"]');
@@ -478,40 +478,48 @@ function createStickyForm({ text, type, image, submitLabel }) {
     updateFormTypeClass(form, typeSelect.value);
   });
 
-  imageInput.addEventListener("change", async () => {
-    const file = imageInput.files[0];
+  imageInputs.forEach((imageInput) => {
+    imageInput.addEventListener("change", async () => {
+      const file = imageInput.files[0];
 
-    if (!file) {
-      return;
-    }
+      if (!file) {
+        return;
+      }
 
-    if (!file.type.startsWith("image/")) {
-      window.alert("画像ファイルを選択してください。");
-      imageInput.value = "";
-      return;
-    }
+      if (!file.type.startsWith("image/")) {
+        window.alert("画像ファイルを選択してください。");
+        clearImageInputs();
+        return;
+      }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "処理中...";
+      submitButton.disabled = true;
+      submitButton.textContent = "処理中...";
 
-    try {
-      // localStorageに入れやすいよう、選択時に800px以内のJPEGへ圧縮します。
-      imageData = await resizeImageFile(file);
-      updateImagePreview();
-    } catch {
-      window.alert("写真を読み込めませんでした。別の画像を選んでください。");
-      imageInput.value = "";
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = submitLabel;
-    }
+      try {
+        // localStorageに入れやすいよう、選択時に800px以内のJPEGへ圧縮します。
+        imageData = await resizeImageFile(file);
+        updateImagePreview();
+      } catch {
+        window.alert("写真を読み込めませんでした。別の画像を選んでください。");
+        clearImageInputs();
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = submitLabel;
+      }
+    });
   });
 
   removeImageButton.addEventListener("click", () => {
     imageData = null;
-    imageInput.value = "";
+    clearImageInputs();
     updateImagePreview();
   });
+
+  function clearImageInputs() {
+    imageInputs.forEach((imageInput) => {
+      imageInput.value = "";
+    });
+  }
 
   function updateImagePreview() {
     if (!imageData) {

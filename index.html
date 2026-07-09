@@ -42,8 +42,18 @@
         </select>
       </div>
       <div class="image-field">
-        <label for="noteImage">写真を選択</label>
-        <input id="noteImage" name="noteImage" type="file" accept="image/*">
+        <span class="image-field-label">写真を撮る / 選ぶ</span>
+        <p class="image-field-help">スマホでは撮影、PCでは画像ファイル選択が使えます。</p>
+        <div class="image-action-row">
+          <label class="image-action-button">
+            写真を撮る
+            <input class="image-action-input" data-image-input name="noteCameraImage" type="file" accept="image/*" capture="environment">
+          </label>
+          <label class="image-action-button">
+            写真を選ぶ
+            <input class="image-action-input" data-image-input name="noteImage" type="file" accept="image/*">
+          </label>
+        </div>
         <div class="image-preview" data-image-preview hidden>
           <img src="" alt="選択した写真のプレビュー">
         </div>
